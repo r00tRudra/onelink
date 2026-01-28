@@ -1,4 +1,12 @@
-backend/venv/
-backend/.env
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+*.db
+*.sqlite3
+uploads/
+.env

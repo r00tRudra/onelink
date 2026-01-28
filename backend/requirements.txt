@@ -1,4 +1,9 @@
 fastapi
 uvicorn
-python-dotenv
-requests
+sqlalchemy
+pydantic-settings
+python-jose[cryptography]
+passlib[bcrypt]
+python-multipart
+PyPDF2       # for resume parsing
+httpx           # for GitHub API calls
