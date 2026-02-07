@@ -15,7 +15,7 @@ import { Plus, Edit2, Trash2 } from 'lucide-react';
 
 interface Experience {
   id: number;
-  job_title: string;
+  title: string;
   company: string;
   start_date: string;
   end_date?: string;
@@ -57,7 +57,7 @@ export default function ExperiencePage() {
   };
 
   const handleSave = async () => {
-    if (!formData.job_title || !formData.company || !formData.start_date) {
+    if (!formData.title || !formData.company || !formData.start_date) {
       alert('Please fill in all required fields');
       return;
     }
@@ -121,9 +121,9 @@ export default function ExperiencePage() {
           <Card className="mb-8">
             <Input
               label="Job Title *"
-              value={formData.job_title || ''}
+              value={formData.title || ''}
               onChange={(e) =>
-                setFormData({ ...formData, job_title: e.target.value })
+                setFormData({ ...formData, title: e.target.value })
               }
               placeholder="e.g., Senior Developer"
               required
@@ -180,7 +180,7 @@ export default function ExperiencePage() {
             <Card key={exp.id}>
               <div className="flex justify-between items-start mb-2">
                 <div>
-                  <h3 className="text-lg font-bold">{exp.job_title}</h3>
+                  <h3 className="text-lg font-bold">{exp.title}</h3>
                   <p className="text-gray-600">{exp.company}</p>
                   <p className="text-sm text-gray-500">
                     {new Date(exp.start_date).toLocaleDateString()} -{' '}

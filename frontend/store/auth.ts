@@ -19,11 +19,27 @@ interface AuthStore {
   logout: () => void;
 }
 
+const getStoredUser = (): User | null => {
+  if (typeof window === 'undefined') return null;
+  const raw = localStorage.getItem('auth_user');
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw) as User;
+  } catch {
+    return null;
+  }
+};
+
 export const useAuthStore = create<AuthStore>((set) => ({
-  user: null,
+  user: typeof window !== 'undefined' ? getStoredUser() : null,
   token: typeof window !== 'undefined' ? localStorage.getItem('access_token') : null,
   isAuthenticated: typeof window !== 'undefined' ? !!localStorage.getItem('access_token') : false,
-  setUser: (user: User) => set({ user, isAuthenticated: true }),
+  setUser: (user: User) => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('auth_user', JSON.stringify(user));
+    }
+    set({ user, isAuthenticated: true });
+  },
   setToken: (token: string) => {
     if (typeof window !== 'undefined') {
       localStorage.setItem('access_token', token);
@@ -33,6 +49,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
   logout: () => {
     if (typeof window !== 'undefined') {
       localStorage.removeItem('access_token');
+      localStorage.removeItem('auth_user');
     }
     set({ user: null, token: null, isAuthenticated: false });
   },

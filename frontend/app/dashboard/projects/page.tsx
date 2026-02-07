@@ -115,7 +115,10 @@ export default function ProjectsPage() {
         </div>
 
         <div className="space-y-4">
-          {projects.map((project) => (
+          {projects.map((project) => {
+            const displayStatus = project.deployed_url ? 'deployed' : project.status;
+
+            return (
             <Card key={project.id}>
               {editingId === project.id ? (
                 <div className="space-y-4">
@@ -195,7 +198,7 @@ export default function ProjectsPage() {
                   <div className="flex justify-between items-center">
                     <div>
                       <span className="text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                        {project.status}
+                        {displayStatus}
                       </span>
                       {project.languages && (
                         <div className="flex gap-2 mt-2">
@@ -222,7 +225,8 @@ export default function ProjectsPage() {
                 </>
               )}
             </Card>
-          ))}
+            );
+          })}
         </div>
 
         {projects.length === 0 && (

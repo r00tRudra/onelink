@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { useAuthStore } from '@/store/auth';
 import { logout } from '@/lib/services';
 import { Menu, LogOut, Settings, User } from 'lucide-react';
@@ -9,6 +10,16 @@ import { Menu, LogOut, Settings, User } from 'lucide-react';
 export default function Header() {
   const router = useRouter();
   const { user, isAuthenticated, logout: logoutStore } = useAuthStore();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const handleLogin = () => {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+    window.location.href = `${apiUrl}/auth/login`;
+  };
 
   const handleLogout = async () => {
     try {
@@ -28,7 +39,7 @@ export default function Header() {
         </Link>
 
         <nav className="flex items-center gap-6">
-          {isAuthenticated && user ? (
+          {!mounted ? null : isAuthenticated && user ? (
             <>
               <Link href="/dashboard" className="hover:text-blue-600">
                 Dashboard
@@ -55,9 +66,9 @@ export default function Header() {
             </>
           ) : (
             <>
-              <Link href="/login" className="btn-primary">
+              <button onClick={handleLogin} className="btn-primary">
                 Login with GitHub
-              </Link>
+              </button>
             </>
           )}
         </nav>

@@ -35,6 +35,7 @@ export default function MediaPage() {
     url: '',
     media_type: 'image',
   });
+  const [file, setFile] = useState<File | null>(null);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -56,15 +57,20 @@ export default function MediaPage() {
   };
 
   const handleAddMedia = async () => {
-    if (!formData.title || !formData.url) {
+    const needsUrl = formData.media_type !== 'image';
+    const hasUrl = !!formData.url;
+    const hasFile = !!file;
+
+    if (!formData.title || (needsUrl && !hasUrl) || (!needsUrl && !hasUrl && !hasFile)) {
       alert('Please fill in all required fields');
       return;
     }
 
     try {
-      await createMedia(formData);
+      await createMedia(formData, file || undefined);
       await loadMedia();
       setFormData({ title: '', url: '', media_type: 'image' });
+      setFile(null);
       setShowForm(false);
     } catch (error) {
       alert('Failed to add media');
@@ -116,14 +122,22 @@ export default function MediaPage() {
               required
             />
             <Input
-              label="URL *"
+              label={formData.media_type === 'image' ? 'URL (optional)' : 'URL *'}
               value={formData.url}
               onChange={(e) =>
                 setFormData({ ...formData, url: e.target.value })
               }
               placeholder="https://example.com/image.jpg"
-              required
+              required={formData.media_type !== 'image'}
             />
+            {formData.media_type === 'image' && (
+              <Input
+                label="Upload Image"
+                type="file"
+                accept="image/*"
+                onChange={(e) => setFile(e.target.files?.[0] || null)}
+              />
+            )}
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Type</label>
               <select

@@ -103,7 +103,7 @@ export const getProjects = async (skip: number = 0, limit: number = 20, status?:
   const params: any = { skip, limit };
   if (status) params.status_filter = status;
   const response = await apiClient.get('/projects', { params });
-  return response.data;
+  return Array.isArray(response.data?.items) ? response.data.items : response.data;
 };
 
 export const getProject = async (id: number) => {
@@ -149,7 +149,26 @@ export const getUserMedia = async () => {
   return response.data;
 };
 
-export const createMedia = async (data: { title: string; url: string; media_type: string }) => {
+export const createMedia = async (
+  data: { title: string; url?: string; media_type: string },
+  file?: File
+) => {
+  if (file) {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('title', data.title);
+    formData.append('media_type', data.media_type);
+    if (data.url) {
+      formData.append('url', data.url);
+    }
+    const response = await apiClient.post('/media', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  }
+
   const response = await apiClient.post('/media', data);
   return response.data;
 };
