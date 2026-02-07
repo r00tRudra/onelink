@@ -39,6 +39,8 @@ async def update_user_profile(
         current_user.location = user_update.location
     if user_update.is_public is not None:
         current_user.is_public = user_update.is_public
+    if user_update.resume_text is not None:
+        current_user.resume_text = user_update.resume_text[:5000]
     
     current_user.updated_at = datetime.utcnow()
     db.commit()

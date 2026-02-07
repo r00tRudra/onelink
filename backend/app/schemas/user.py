@@ -17,6 +17,7 @@ class UserUpdate(BaseModel):
     bio: Optional[str] = None
     location: Optional[str] = None
     is_public: Optional[bool] = None
+    resume_text: Optional[str] = None
 
 
 class UserResponse(UserBase):
@@ -27,6 +28,7 @@ class UserResponse(UserBase):
     profile_url: Optional[str]
     email: Optional[str]
     is_public: bool
+    resume_text: Optional[str] = None
     created_at: datetime
     updated_at: datetime
     last_sync: Optional[datetime]
@@ -44,6 +46,7 @@ class UserPublicResponse(BaseModel):
     avatar_url: Optional[str]
     profile_url: Optional[str]
     is_public: bool
+    resume_text: Optional[str] = None
 
     class Config:
         from_attributes = True

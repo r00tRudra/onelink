@@ -64,6 +64,7 @@ async def get_public_portfolio(
             "location": user.location,
             "avatar_url": user.avatar_url,
             "profile_url": user.profile_url,
+            "resume_text": user.resume_text,
             "created_at": user.created_at.isoformat() if user.created_at else None,
         },
         "projects": [

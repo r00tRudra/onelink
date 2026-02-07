@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/auth';
 import Layout from '@/components/Layout';
 import { Card, Button } from '@/components/FormComponents';
-import { uploadResume, getResume } from '@/lib/services';
+import { uploadResume, getResume, getCurrentUser, updateUserProfile } from '@/lib/services';
 import { Upload, FileText, Download } from 'lucide-react';
 
 export default function ResumePage() {
@@ -14,23 +14,48 @@ export default function ResumePage() {
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [resumeText, setResumeText] = useState<string>('');
+  const [summaryText, setSummaryText] = useState<string>('');
+  const [savingSummary, setSavingSummary] = useState(false);
 
   useEffect(() => {
     if (!isAuthenticated) {
       router.push('/login');
     } else {
       loadResume();
+      loadSummary();
     }
   }, [isAuthenticated, router]);
 
   const loadResume = async () => {
     try {
-      const text = await getResume();
-      setResumeText(text);
+      const response = await getResume();
+      setResumeText(response?.resume_text || '');
     } catch (error) {
       console.error('Failed to load resume:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadSummary = async () => {
+    try {
+      const user = await getCurrentUser();
+      setSummaryText(user?.resume_text || '');
+    } catch (error) {
+      console.error('Failed to load profile summary:', error);
+    }
+  };
+
+  const handleSaveSummary = async () => {
+    setSavingSummary(true);
+    try {
+      await updateUserProfile({ resume_text: summaryText });
+      alert('Profile summary updated!');
+    } catch (error) {
+      alert('Failed to update profile summary');
+      console.error(error);
+    } finally {
+      setSavingSummary(false);
     }
   };
 
@@ -102,6 +127,28 @@ export default function ResumePage() {
                 className="hidden"
               />
             </label>
+          </div>
+        </Card>
+
+        <Card className="mb-8">
+          <h2 className="text-2xl font-bold mb-4">Profile Summary</h2>
+          <p className="text-gray-600 mb-4">
+            This summary appears on your public portfolio in the About section.
+          </p>
+          <textarea
+            className="w-full min-h-[160px] border border-gray-300 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Write a short summary about your experience and strengths..."
+            value={summaryText}
+            onChange={(e) => setSummaryText(e.target.value)}
+            maxLength={5000}
+          />
+          <div className="flex items-center justify-between mt-3">
+            <span className="text-sm text-gray-500">
+              {summaryText.length}/5000 characters
+            </span>
+            <Button onClick={handleSaveSummary} disabled={savingSummary}>
+              {savingSummary ? 'Saving...' : 'Save Summary'}
+            </Button>
           </div>
         </Card>
 
